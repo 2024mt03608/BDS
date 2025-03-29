@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # Define HDFS directories
-HDFS_INPUT_DIR="/user/vivekb/input"
-HDFS_OUTPUT_DIR="/user/vivekb/output1"
-LOCAL_INPUT_FILE="shakespeare.txt"
+HDFS_INPUT_DIR="/home/centos"
+HDFS_OUTPUT_DIR="/home/centos"
+LOCAL_INPUT_FILE="50000_Sales_Records.csv"
 
 # Ensure Hadoop services are running
 echo "====== Starting Hadoop Services ======"
@@ -46,4 +46,5 @@ echo "====== MapReduce Job Completed ======"
 # Display results
 echo "====== Output Preview ======"
 hdfs dfs -cat "$HDFS_OUTPUT_DIR/part-00000" | head -20
+
 
