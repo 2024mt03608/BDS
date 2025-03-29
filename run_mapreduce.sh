@@ -2,7 +2,7 @@
 
 # Define HDFS directories
 HDFS_INPUT_DIR="/home/centos"
-HDFS_OUTPUT_DIR="/home/centos"
+HDFS_OUTPUT_DIR="/home/centos/output"
 LOCAL_INPUT_FILE="50000_Sales_Records.csv"
 
 # Ensure Hadoop services are running
