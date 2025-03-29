@@ -36,8 +36,8 @@ fi
 echo "====== Running MapReduce Job ======"
 hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
     -files mapper.py,reducer.py \
-    -mapper "python3 mapper.py" \
-    -reducer "python3 reducer.py" \
+    -mapper "country.mapper.py" \
+    -reducer "country.reducer.py" \
     -input "$HDFS_INPUT_DIR/$(basename $LOCAL_INPUT_FILE)" \
     -output "$HDFS_OUTPUT_DIR"
 
