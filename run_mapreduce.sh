@@ -1,8 +1,7 @@
-
 # Set environment variables (modify paths as necessary)
-HDFS_INPUT_DIR="/user/vivekb/input"
-HDFS_OUTPUT_DIR="/user/vivekb/output1"
-LOCAL_INPUT_FILE="shakespeare.txt"
+HDFS_INPUT_DIR="/user/Pravin/input"
+HDFS_OUTPUT_DIR="/user/Pravin/output1"
+LOCAL_INPUT_FILE="50000_Sales_Records.csv"
 MAPPER_SCRIPT="mapper.py"
 REDUCER_SCRIPT="reducer.py"
 
@@ -40,7 +39,7 @@ hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
     -files "$MAPPER_SCRIPT","$REDUCER_SCRIPT" \
     -mapper "python3 $MAPPER_SCRIPT" \
     -reducer "python3 $REDUCER_SCRIPT" \
-    -input "$HDFS_INPUT_DIR/shakespeare.txt" \
+    -input "$HDFS_INPUT_DIR/50000_Sales_Records.csv" \
     -output "$HDFS_OUTPUT_DIR"
 
 # Check if the job completed successfully
