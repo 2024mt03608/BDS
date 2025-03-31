@@ -4,8 +4,8 @@
 HDFS_INPUT_DIR="/home/centos/input"
 HDFS_OUTPUT_DIR="/home/centos/output"
 LOCAL_INPUT_FILE="50000_Sales_Records.csv"
-MAPPER_SCRIPT="country_mapper.py"
-REDUCER_SCRIPT="country_reducer.py"
+MAPPER_SCRIPT="product_mapper.py"
+REDUCER_SCRIPT="product_reducer.py"
 
 # Start Hadoop Services (Only if necessary)
 echo "====== Starting Hadoop Services ======"
