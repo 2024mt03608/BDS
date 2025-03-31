@@ -1,50 +1,54 @@
-#!/bin/sh
+#!/bin/bash
 
-# Define HDFS directories
+# Set environment variables (modify paths as necessary)
 HDFS_INPUT_DIR="/home/centos/input"
 HDFS_OUTPUT_DIR="/home/centos/output"
 LOCAL_INPUT_FILE="50000_Sales_Records.csv"
+MAPPER_SCRIPT="country_mapper.py"
+REDUCER_SCRIPT="country_reducer.py"
 
-# Ensure Hadoop services are running
+# Start Hadoop Services (Only if necessary)
 echo "====== Starting Hadoop Services ======"
-sudo systemctl start hadoop.service 2>/dev/null || echo "Skipping systemctl (not applicable). Starting manually..."
-start-dfs.sh
-start-yarn.sh
+sudo systemctl start hadoop.service  # Modify as per your setup
 
-# Exit Safe Mode if enabled
+# Ensure HDFS is running
 hdfs dfsadmin -safemode leave
 
-# Ensure the input directory exists in HDFS
-echo "====== Setting up HDFS Directories ======"
-hdfs dfs -mkdir -p "$HDFS_INPUT_DIR"
-
-# Upload the dataset if not already present
-if ! hdfs dfs -test -e "$HDFS_INPUT_DIR/$(basename $LOCAL_INPUT_FILE)"; then
-    echo "Uploading input file to HDFS..."
-    hdfs dfs -put "$LOCAL_INPUT_FILE" "$HDFS_INPUT_DIR/"
-else
-    echo "Input file already exists in HDFS. Skipping upload."
+# Check if the input directory exists, create if not
+hdfs dfs -test -d "$HDFS_INPUT_DIR"
+if [ $? -ne 0 ]; then
+    echo "Creating HDFS input directory: $HDFS_INPUT_DIR"
+    hdfs dfs -mkdir -p "$HDFS_INPUT_DIR"
 fi
 
-# Ensure the output directory is removed before the job runs
-if hdfs dfs -test -d "$HDFS_OUTPUT_DIR"; then
-    echo "Output directory already exists. Removing..."
+# Upload input file if not already in HDFS
+hdfs dfs -test -e "$HDFS_INPUT_DIR/shakespeare.txt"
+if [ $? -ne 0 ]; then
+    echo "Uploading input file to HDFS..."
+    hdfs dfs -put "$LOCAL_INPUT_FILE" "$HDFS_INPUT_DIR/"
+fi
+
+# Ensure the output directory does not exist (delete if it does)
+hdfs dfs -test -d "$HDFS_OUTPUT_DIR"
+if [ $? -eq 0 ]; then
+    echo "Removing previous output directory..."
     hdfs dfs -rm -r "$HDFS_OUTPUT_DIR"
 fi
 
-# Run Hadoop Streaming Job
-echo "====== Running MapReduce Job ======"
+# Run the Hadoop Streaming MapReduce Job
+echo "====== Running Hadoop MapReduce Job ======"
 hadoop jar $HADOOP_HOME/share/hadoop/tools/lib/hadoop-streaming-*.jar \
-    -files $(pwd)/country_mapper.py,$(pwd)/country_reducer.py \
-    -mapper "country_mapper.py" \
-    -reducer "country_reducer.py" \
-    -input "$HDFS_INPUT_DIR/$(basename $LOCAL_INPUT_FILE)" \
+    -files "$MAPPER_SCRIPT","$REDUCER_SCRIPT" \
+    -mapper "python3 $MAPPER_SCRIPT" \
+    -reducer "python3 $REDUCER_SCRIPT" \
+    -input "$HDFS_INPUT_DIR/50000_Sales_Records.csv" \
     -output "$HDFS_OUTPUT_DIR"
 
-echo "====== MapReduce Job Completed ======"
-
-# Display results
-echo "====== Output Preview ======"
-hdfs dfs -cat "$HDFS_OUTPUT_DIR/part-00000" | head -20
-
-
+# Check if the job completed successfully
+if [ $? -eq 0 ]; then
+    echo "====== Job Completed Successfully! ======"
+    echo "====== Output Preview ======"
+    hdfs dfs -cat "$HDFS_OUTPUT_DIR/part-00000" | head -20
+else
+    echo "====== Job Failed. Check Hadoop Logs. ======"
+fi
