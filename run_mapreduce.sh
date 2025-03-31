@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Set environment variables (modify paths as necessary)
-HDFS_INPUT_DIR="/home/centos/input"
+HDFS_INPUT_DIR="/home/centos/product"
 HDFS_OUTPUT_DIR="/home/centos/output"
 LOCAL_INPUT_FILE="50000_Sales_Records.csv"
 MAPPER_SCRIPT="product_mapper.py"
